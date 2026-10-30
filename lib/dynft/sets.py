@@ -51,7 +51,7 @@ def ipset_element_factory(members, addr_family='ipv4_addr'):
             literal = IPAddress(member.get('literal'))
             if literal.version == _inet_family: 
                 try:
-                    rev_dns = resolver.resolve_address(literal.format())[0].to_text()
+                    rev_dns = resolver.query(literal.reverse_dns, 'PTR')[0].to_text()
                 except NXDOMAIN:
                     rev_dns = 'IP-LITERAL'
                 elements.append(IPSetElement(dict(
@@ -59,7 +59,7 @@ def ipset_element_factory(members, addr_family='ipv4_addr'):
                 )))
         elif member.get('host') and not member.get('literal'):
             try:
-                addrs = resolver.resolve(member.get('host'), _rrtype)
+                addrs = resolver.query(member.get('host'), _rrtype)
             except NoAnswer:
                 addrs = []
             except NXDOMAIN:
